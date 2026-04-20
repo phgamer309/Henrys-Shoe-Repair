@@ -1,0 +1,53 @@
+import streamlit as st
+import firebase_admin
+from firebase_admin import credentials, firestore
+
+# --- 1. FIREBASE SETUP (Same as your main app) ---
+if not firebase_admin._apps:
+    cred = credentials.Certificate(r"C:\Users\phgam\Desktop\Reward App\key.json")
+    firebase_admin.initialize_app(cred)
+db = firestore.client()
+
+# --- 2. STYLE (Same "Leather & Cream" vibe) ---
+st.set_page_config(page_title="Henry's Rewards", page_icon="👞")
+st.markdown("""
+    <style>
+    .stApp { background-color: #Fdf5e6; }
+    h1, h2, h3 { color: #5D4037 !important; font-family: 'Georgia', serif; }
+    .stButton>button { background-color: #8D6E63; color: white; width: 100%; }
+    </style>
+    """, unsafe_allow_html=True)
+
+# --- 3. CUSTOMER INTERFACE ---
+st.title("👞 Henry's Quality Shoe Repair")
+st.subheader("Loyalty Rewards Portal")
+
+phone = st.text_input("Enter your Phone Number to see your rewards:")
+
+if phone:
+    doc_ref = db.collection("customers").document(phone)
+    doc = doc_ref.get()
+    
+    if doc.exists:
+        data = doc.to_dict()
+        st.markdown(f"## Welcome back, {data['name']}!")
+        
+        # Big Point Display
+        st.metric(label="Your Current Points", value=data['points'])
+        
+        # Progress Bar to next reward
+        progress = min(data['points'] / 100, 1.0)
+        st.progress(progress)
+        
+        if data['points'] >= 100:
+            st.balloons()
+            st.success("🎉 You have a reward waiting! Show this screen to Henry.")
+        else:
+            st.info(f"You're just {100 - data['points']} points away from a $10 discount.")
+            
+        # Optional: Show repair history
+        with st.expander("View your repair history"):
+            for repair in data.get('repairs', []):
+                st.write(f"✅ {repair}")
+    else:
+        st.error("Phone number not found. Please register at the shop next time you visit!")
