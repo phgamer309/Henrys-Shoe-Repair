@@ -36,14 +36,14 @@ if phone:
         st.metric(label="Your Current Points", value=data['points'])
         
         # Progress Bar to next reward
-        progress = min(data['points'] / 100, 1.0)
+        progress = min(data['points'] / 250, 1.0)
         st.progress(progress)
         
-        if data['points'] >= 100:
+        if data['points'] >= 250:
             st.balloons()
             st.success("🎉 You have a reward waiting! Show this screen to Henry.")
         else:
-            st.info(f"You're just {100 - data['points']} points away from a $10 discount.")
+            st.info(f"You're just {250 - data['points']} points away from a $10 discount.")
             
         # Optional: Show repair history
         with st.expander("View your repair history"):

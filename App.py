@@ -5,7 +5,7 @@ from firebase_admin import credentials, firestore
 # --- 1. FIREBASE SETUP ---
 if not firebase_admin._apps:
     # Make sure this filename matches exactly what you renamed your JSON file
-    cred = credentials.Certificate(r"C:\Users\phgam\Desktop\Reward App\key.json") 
+    cred = credentials.Certificate("key.json") 
     firebase_admin.initialize_app(cred)
 
 db = firestore.client()
