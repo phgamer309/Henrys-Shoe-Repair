@@ -78,51 +78,66 @@ elif choice == "Log a Repair":
             cust = doc.to_dict()
             st.info(f"Customer: **{cust['name']}** | Points: {cust['points']}")
             
-            # --- NEW: REDEEM REWARDS SECTION ---
-            st.markdown("### 🎁 Available Rewards")
-            if cust['points'] >= 100:
+            # --- 1. REWARD CHECK (The 250 Point Goal) ---
+            st.markdown("### 🎁 Rewards Status")
+            if cust['points'] >= 250:
                 st.balloons()
-                st.success("This customer is eligible for a reward!")
-                if st.button("Redeem 100 Points ($10 Discount)"):
-                    new_val = cust['points'] - 100
-                    doc_ref.update({"points": new_val})
-                    st.toast("Points Deducted!", icon="✅")
-                    st.rerun() # Refresh to show the new lower balance
+                st.success("🎉 This customer has earned a $10 discount!")
+                if st.button("Redeem 250 Points"):
+                    doc_ref.update({"points": cust['points'] - 250})
+                    st.toast("250 Points Redeemed!", icon="👞")
+                    st.rerun() 
             else:
-                points_needed = 100 - cust['points']
-                st.write(f"Keep going! Only **{points_needed}** more points until a free reward.")
-            # Preset Prices for Henry's Services
+                points_needed = 250 - cust['points']
+                st.write(f"Status: **{points_needed}** more points until a reward.")
+            
+            st.markdown("---")
+
+            # --- 2. SERVICE SELECTION ---
             services = {
-                "Standard Shine ($15)": 15,
-                "Heel Repair ($40)": 40,
-                "Full Resole ($100)": 100,
-                "Stretching ($20)": 20,
+                "Standard Shine ($20 up)": 20,
+                "Boot Shine ($25)": 25,
+                "Red Bottom Heel Tip Repair ($25)":25,
+                "Heel Tip Repair ($18 - $28)": 18,
+                "Men Heel Dress Shoe ($45)":45,
+                "Men Boot Heel ($55)":55,
+                "Reglue ($30)":30,
+                "Reglue Tennis Shoe ($50)":50,
+                "Heel Wrap ($55)":55,
+                "Leather Full sole ($95)": 95,
+                "Leather Half Sole($75)":75,
+                "Rubber Full Sole($85)":85,
+                "Rubber Half Sole($75)":75,
+                "Stretch ($20)": 20,
+                "Stretch Boot ($25)": 25,
+                "Red Bottom Power Sole($50)":50,
+                "Power Sole($30)":30,
+                "Men Red Bottom Power Sole($50)":50,
+                "Men Power sole($35)":35,
                 "Custom Amount": 0
             }
             
             selected_service = st.selectbox("Select Service", list(services.keys()))
+            amount = st.number_input(
+           "Confirm Final Price ($)", 
+            min_value=0, 
+            value=services[selected_service], # This automatically fills in 18, 20, or 100
+            step=1
+)
+            amount = st.number_input("Enter Amount ($)", min_value=1) if selected_service == "Custom Amount" else services[selected_service]
             
-            if selected_service == "Custom Amount":
-                amount = st.number_input("Enter Amount ($)", min_value=1)
-            else:
-                amount = services[selected_service]
-                st.write(f"Points to add: **{amount}**")
-            
+            # --- 3. THE MATH (0.5 points per dollar) ---
+            points_to_add = amount * 0.5
+            st.write(f"This service will add: **{points_to_add}** points.")
+
             if st.button("Apply Points & Complete"):
-                new_points = cust['points'] + amount
+                new_points = cust['points'] + points_to_add
                 doc_ref.update({
                     "points": new_points,
                     "repairs": firestore.ArrayUnion([selected_service])
                 })
-                st.balloons()
-                st.success(f"Success! {cust['name']} now has {new_points} points.")
-                # Add a Reward Section
-            if cust['points'] >= 100:
-                st.warning("🎉 Reward Available: 100 Points for $10 off!")
-                if st.button("Redeem 100 Points"):
-                    doc_ref.update({"points": cust['points'] - 100})
-                    st.success("Reward Redeemed! $10 applied to total.")
-                    st.rerun() # Refresh the page to show new balance
+                st.success(f"Success! Added {points_to_add} points.")
+                st.rerun()
         else:
             st.warning("Customer not found.")
 
