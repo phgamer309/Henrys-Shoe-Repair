@@ -4,7 +4,7 @@ from firebase_admin import credentials, firestore
 
 # --- 1. FIREBASE SETUP (Same as your main app) ---
 if not firebase_admin._apps:
-    cred = credentials.Certificate(r"C:\Users\phgam\Desktop\Reward App\key.json")
+    cred = credentials.Certificate("key.json")
     firebase_admin.initialize_app(cred)
 db = firestore.client()
 
