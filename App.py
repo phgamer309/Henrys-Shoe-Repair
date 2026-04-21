@@ -2,6 +2,7 @@ import streamlit as st
 import firebase_admin
 from firebase_admin import credentials
 from google.cloud import firestore
+from google.api_core import retry
 
 # --- 1. FIREBASE SETUP ---
 if not firebase_admin._apps:
@@ -65,15 +66,17 @@ if choice == "New Customer":
 if st.button("Register Customer"):
     if name and phone:
         try:
-            # Direct save - no batching
             db.collection("customers").document(phone).set({
                 "name": name,
                 "points": 0,
                 "repairs": []
-            })
-            st.success(f"Registered {name}!")
+            }, timeout=30) 
+            
+            st.success(f"Successfully registered {name}!")
         except Exception as e:
-            st.error(f"Physical Connection Error: {e}")
+            st.error(f"Connection timed out. Error: {e}")
+    else:
+        st.warning("Please fill in both name and phone number.")
 elif choice == "Log a Repair":
     st.header("Log a Service")
     phone_lookup = st.text_input("Enter Customer Phone")
