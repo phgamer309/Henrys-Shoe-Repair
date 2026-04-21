@@ -71,6 +71,7 @@ if choice == "New Customer":
         phone = st.text_input("Phone Number")
         submit_button = st.form_submit_button("Register Customer")
         # Simplified Registering Logic
+st.write(f"Current DB Status: {db}")
 if st.button("Register Customer"):
     name = name.strip
     phone = phone.strip
