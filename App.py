@@ -1,20 +1,21 @@
 import streamlit as st
 import firebase_admin
-from firebase_admin import credentials, firestore
-from google.cloud import firestore # Ensure this import is at the top
+from firebase_admin import credentials
+from google.cloud import firestore  # Make sure this is imported!
 
 # --- 1. FIREBASE SETUP ---
 if not firebase_admin._apps:
     try:
+        # Use the secrets we set up earlier
         key_dict = dict(st.secrets["firebase_config"])
         cred = credentials.Certificate(key_dict)
         firebase_admin.initialize_app(cred)
     except Exception as e:
         st.error(f"Setup Error: {e}")
 
-# FORCE THE DATABASE TO USE REST INSTEAD OF GRPC
-db = firestore.Client(project="henrysshoerepair-4a96e", database="(default)")
-
+# IMPORTANT: This line forces the app to use a stable web connection
+# Replace 'henrysshoerepair-4a96e' with your actual project ID if different
+db = firestore.Client(project="henrysshoerepair-4a96e")
 # --- 2. APP CONFIG ---
 st.set_page_config(page_title="Henry's Quality Shoe Repair", page_icon="👞")
 # --- CUSTOM STYLING ---
