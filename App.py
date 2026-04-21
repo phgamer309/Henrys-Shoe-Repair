@@ -2,21 +2,37 @@ import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-# --- 1. FIREBASE SETUP ---
-# --- 1. THE REPAIRED SETUP ---
+import streamlit as st
+import firebase_admin
+from firebase_admin import credentials, firestore
+
+# --- 1. INITIALIZE GLOBAL VARIABLE ---
+# We define db as None first so the 'not defined' error goes away
+db = None
+
+# --- 2. FIREBASE SETUP ---
 if not firebase_admin._apps:
     try:
+        # Load secrets
         key_dict = dict(st.secrets["firebase_config"])
         
-        # This fixes the /n typo AND the standard \n issue
+        # THE CLEANER: Fixes the /n and \n issues we found earlier
         key_dict["private_key"] = key_dict["private_key"].replace("/n", "\n").replace("\\n", "\n")
         
+        # Initialize the app
         cred = credentials.Certificate(key_dict)
         firebase_admin.initialize_app(cred)
-        st.success("Connected to Henry's Database!")
+        st.success("✅ Firebase Initialized!")
+        
     except Exception as e:
-        st.error(f"Init Error: {e}")
-# --- 2. APP CONFIG ---
+        st.error(f"❌ Firebase Init Error: {e}")
+
+# Try to assign the client to our global 'db' variable
+try:
+    db = firestore.client()
+except Exception:
+    db = None
+#---APP CONFIG---
 st.set_page_config(page_title="Henry's Quality Shoe Repair", page_icon="👞")
 # --- CUSTOM STYLING ---
 st.markdown("""
