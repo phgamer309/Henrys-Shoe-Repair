@@ -84,9 +84,9 @@ if choice == "New Customer":
         else:
             st.warning("Please fill in both name and phone number.")
 
-elif choice == "Log a Repair":
+ elif choice == "Log a Repair":
     # ... rest of your code ...
-elif choice == "Log a Repair":
+ elif choice == "Log a Repair":
     st.header("Log a Service")
     phone_lookup = st.text_input("Enter Customer Phone")
     
