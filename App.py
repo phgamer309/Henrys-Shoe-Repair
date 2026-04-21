@@ -3,17 +3,21 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 
 # --- 1. THE STRIPPED DOWN SETUP ---
+# --- 1. THE STRIPPED DOWN SETUP ---
 if not firebase_admin._apps:
     try:
+        # 1. Load the secret dictionary
         key_dict = dict(st.secrets["firebase_config"])
+        
+        # 2. THE FIX: Convert literal "\n" strings into real line breaks
+        key_dict["private_key"] = key_dict["private_key"].replace("\\n", "\n")
+        
+        # 3. Initialize with the fixed key
         cred = credentials.Certificate(key_dict)
-        # We don't need the firestore.Client() line if we use the admin SDK correctly
         firebase_admin.initialize_app(cred)
+        
     except Exception as e:
         st.error(f"Firebase Init Error: {e}")
-
-# This is the simplest way to call the database
-db = firestore.client()
 # --- 2. APP CONFIG ---
 st.set_page_config(page_title="Henry's Quality Shoe Repair", page_icon="👞")
 # --- CUSTOM STYLING ---
