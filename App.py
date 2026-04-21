@@ -4,6 +4,7 @@ from firebase_admin import credentials
 from google.cloud import firestore
 from google.oauth2 import service_account # Add this import!
 
+db = None
 # --- 1. FIREBASE SETUP ---
 if not firebase_admin._apps:
     try:
