@@ -2,32 +2,27 @@ import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-# --- 1. PREVENT GLOBAL CRASHES ---
-# Define db as None initially so the script knows the name exists
-db = None
-
-# --- 2. FIREBASE SETUP ---
+# --- 1. THE REPAIRED SETUP ---
 if not firebase_admin._apps:
     try:
-        # Load secrets
+        # Load the raw secrets dictionary
         key_dict = dict(st.secrets["firebase_config"])
         
-        # THE JWT FIX: This repairs the 'Invalid Signature' issue
-        # It ensures the private key has real line breaks (\n)
-        if "private_key" in key_dict:
-            key_dict["private_key"] = key_dict["private_key"].replace("\\n", "\n")
+        # THE FIX: Replace literal "\n" strings with actual newlines
+        # This repairs the JWT signature so Google can read it
+        key_dict["private_key"] = key_dict["private_key"].replace("\\n", "\n")
         
-        # Initialize the app
+        # Initialize the app with the repaired key
         cred = credentials.Certificate(key_dict)
         firebase_admin.initialize_app(cred)
         
     except Exception as e:
-        st.error(f"⚠️ Firebase failed to initialize: {e}")
+        st.error(f"Firebase Init Error: {e}")
 
-# Try to get the client. This will only work if the block above succeeded.
+# This line must be outside the try block to be used by the rest of the app
 try:
     db = firestore.client()
-except Exception:
+except:
     db = None
 # --- 2. APP CONFIG ---
 st.set_page_config(page_title="Henry's Quality Shoe Repair", page_icon="👞")
