@@ -3,25 +3,19 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 
 # --- 1. FIREBASE SETUP ---
+# --- 1. THE REPAIRED SETUP ---
 if not firebase_admin._apps:
     try:
-        # Load the secrets from Streamlit
         key_dict = dict(st.secrets["firebase_config"])
         
-        # THE FIX: This specific line repairs the signature 
-        # by cleaning up any double-escaped newlines.
-        key_dict["private_key"] = key_dict["private_key"].replace("\\n", "\n")
+        # This fixes the /n typo AND the standard \n issue
+        key_dict["private_key"] = key_dict["private_key"].replace("/n", "\n").replace("\\n", "\n")
         
-        # Initialize with the cleaned dictionary
         cred = credentials.Certificate(key_dict)
         firebase_admin.initialize_app(cred)
-        
-        st.success("✅ Firebase Connection Established!")
+        st.success("Connected to Henry's Database!")
     except Exception as e:
-        st.error(f"❌ Connection Failed: {e}")
-
-# Global database variable
-db = firestore.client()
+        st.error(f"Init Error: {e}")
 # --- 2. APP CONFIG ---
 st.set_page_config(page_title="Henry's Quality Shoe Repair", page_icon="👞")
 # --- CUSTOM STYLING ---
