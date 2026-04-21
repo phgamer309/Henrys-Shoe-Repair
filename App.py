@@ -61,17 +61,18 @@ if choice == "New Customer":
         # Simplified Registering Logic
 st.write(f"Current DB Status: {db}")
 if st.button("Register Customer"):
-    name = name.strip
-    phone = phone.strip
+    name = name.strip()
+    phone = phone.strip()
     if name and phone:
         try:
             db.collection("customers").document(phone).set({
                 "name": name,
                 "points": 0,
                 "repairs": []
-                }),  
+                })  
             
             st.success(f"Successfully registered {name}!")
+            st.balloons()
         except Exception as e:
             st.error(f"Connection timed out. Error: {e}")
     else:
