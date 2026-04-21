@@ -1,19 +1,19 @@
 import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, firestore
+from google.cloud import firestore # Ensure this import is at the top
 
 # --- 1. FIREBASE SETUP ---
 if not firebase_admin._apps:
-    # Convert secrets to a dictionary Python can read
     try:
-        key_dict = st.secrets["firebase_config"]
-        cred = credentials.Certificate(dict(key_dict))
+        key_dict = dict(st.secrets["firebase_config"])
+        cred = credentials.Certificate(key_dict)
         firebase_admin.initialize_app(cred)
     except Exception as e:
-        st.error(f"Failed to connect to Firebase: {e}")
+        st.error(f"Setup Error: {e}")
 
-db = firestore.client()
-
+# FORCE THE DATABASE TO USE REST INSTEAD OF GRPC
+db = firestore.Client(project="henrysshoerepair-4a96e", database="(default)")
 # --- 2. STYLE (Same "Leather & Cream" vibe) ---
 st.set_page_config(page_title="Henry's Rewards", page_icon="👞")
 st.markdown("""
