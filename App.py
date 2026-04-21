@@ -1,31 +1,19 @@
 import streamlit as st
 import firebase_admin
-from firebase_admin import credentials
-from google.cloud import firestore
-from google.oauth2 import service_account # Add this import!
+from firebase_admin import credentials, firestore
 
-db = None
-# --- 1. FIREBASE SETUP ---
-# Initialize db at the very top so it's always defined
-if 'db' not in st.session_state:
-    st.session_state.db = None
-
-try:
-    if not firebase_admin._apps:
+# --- 1. THE STRIPPED DOWN SETUP ---
+if not firebase_admin._apps:
+    try:
         key_dict = dict(st.secrets["firebase_config"])
         cred = credentials.Certificate(key_dict)
+        # We don't need the firestore.Client() line if we use the admin SDK correctly
         firebase_admin.initialize_app(cred)
-        
-        client_creds = service_account.Credentials.from_service_account_info(key_dict)
-        # Use the ID directly from the secret to avoid typos
-        st.session_state.db = firestore.Client(
-            project=key_dict["project_id"], 
-            credentials=client_creds
-        )
-except Exception as e:
-    st.error(f"Initial Connection Failed: {e}")
+    except Exception as e:
+        st.error(f"Firebase Init Error: {e}")
 
-db = st.session_state.db
+# This is the simplest way to call the database
+db = firestore.client()
 # --- 2. APP CONFIG ---
 st.set_page_config(page_title="Henry's Quality Shoe Repair", page_icon="👞")
 # --- CUSTOM STYLING ---
@@ -81,7 +69,7 @@ if st.button("Register Customer"):
                 "name": name,
                 "points": 0,
                 "repairs": []
-            }, timeout=30) 
+            },  
             
             st.success(f"Successfully registered {name}!")
         except Exception as e:
