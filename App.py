@@ -71,7 +71,7 @@ choice = st.sidebar.radio("Action", ["New Customer", "Log a Repair", "View All R
 if choice == "New Customer":
     st.header("Register New Client")
     if db is not None:
-        with st.form("reg_form"):
+        with st.form("reg_form_v2"):
             # ... your text inputs ...
             submit_button = st.form_submit_button("Register")
             
