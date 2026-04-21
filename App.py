@@ -2,22 +2,34 @@ import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-# --- 1. THE STRIPPED DOWN SETUP ---
-# --- 1. THE STRIPPED DOWN SETUP ---
+# --- 1. INITIALIZE GLOBAL VARIABLE ---
+# This prevents the "name 'db' is not defined" error
+if 'db' not in st.session_state:
+    st.session_state.db = None
+
+# --- 2. FIREBASE SETUP ---
 if not firebase_admin._apps:
     try:
-        # 1. Load the secret dictionary
+        # Load secrets
         key_dict = dict(st.secrets["firebase_config"])
         
-        # 2. THE FIX: Convert literal "\n" strings into real line breaks
-        key_dict["private_key"] = key_dict["private_key"].replace("\\n", "\n")
+        # THE SIGNATURE FIX: This repairs the bent "JWT" key
+        if "\\n" in key_dict["private_key"]:
+            key_dict["private_key"] = key_dict["private_key"].replace("\\n", "\n")
         
-        # 3. Initialize with the fixed key
+        # Initialize the app
         cred = credentials.Certificate(key_dict)
         firebase_admin.initialize_app(cred)
         
+        # Create the client and save it to session state
+        st.session_state.db = firestore.client()
+        st.success("Firebase Handshake Successful!")
+        
     except Exception as e:
         st.error(f"Firebase Init Error: {e}")
+
+# Map the global 'db' to the one in session state
+db = st.session_state.db
 # --- 2. APP CONFIG ---
 st.set_page_config(page_title="Henry's Quality Shoe Repair", page_icon="👞")
 # --- CUSTOM STYLING ---
