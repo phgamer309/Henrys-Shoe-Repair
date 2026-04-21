@@ -12,8 +12,6 @@ if not firebase_admin._apps:
         # Load secrets
         key_dict = dict(st.secrets["firebase_config"])
         
-        # THE CLEANER: Fixes the /n and \n issues we found earlier
-        key_dict["private_key"] = key_dict["private_key"].replace("/n", "\n").replace("\\n", "\n")
         
         # Initialize the app
         cred = credentials.Certificate(key_dict)
