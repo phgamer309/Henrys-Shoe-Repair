@@ -2,10 +2,9 @@ import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-# --- 1. INITIALIZE GLOBAL VARIABLE ---
-# This prevents the "name 'db' is not defined" error
-if 'db' not in st.session_state:
-    st.session_state.db = None
+# --- 1. PREVENT GLOBAL CRASHES ---
+# Define db as None initially so the script knows the name exists
+db = None
 
 # --- 2. FIREBASE SETUP ---
 if not firebase_admin._apps:
@@ -13,23 +12,23 @@ if not firebase_admin._apps:
         # Load secrets
         key_dict = dict(st.secrets["firebase_config"])
         
-        # THE SIGNATURE FIX: This repairs the bent "JWT" key
-        if "\\n" in key_dict["private_key"]:
+        # THE JWT FIX: This repairs the 'Invalid Signature' issue
+        # It ensures the private key has real line breaks (\n)
+        if "private_key" in key_dict:
             key_dict["private_key"] = key_dict["private_key"].replace("\\n", "\n")
         
         # Initialize the app
         cred = credentials.Certificate(key_dict)
         firebase_admin.initialize_app(cred)
         
-        # Create the client and save it to session state
-        st.session_state.db = firestore.client()
-        st.success("Firebase Handshake Successful!")
-        
     except Exception as e:
-        st.error(f"Firebase Init Error: {e}")
+        st.error(f"⚠️ Firebase failed to initialize: {e}")
 
-# Map the global 'db' to the one in session state
-db = st.session_state.db
+# Try to get the client. This will only work if the block above succeeded.
+try:
+    db = firestore.client()
+except Exception:
+    db = None
 # --- 2. APP CONFIG ---
 st.set_page_config(page_title="Henry's Quality Shoe Repair", page_icon="👞")
 # --- CUSTOM STYLING ---
