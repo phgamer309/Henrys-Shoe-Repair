@@ -3,7 +3,7 @@ import firebase_admin
 from firebase_admin import credentials
 from google.cloud import firestore
 from google.api_core import retry
-
+from google.cloud.firestore_v1.services.firestore.transports import FirestoreRestTransport
 # --- 1. FIREBASE SETUP ---
 if not firebase_admin._apps:
     try:
@@ -16,8 +16,7 @@ if not firebase_admin._apps:
 # This is the fix: Force REST instead of gRPC
 db = firestore.Client(
     project="henrysshoerepair-4a96e",
-    client_options={"api_endpoint": "firestore.googleapis.com"}
-)
+    transport=FirestoreRestTransport
 # --- 2. APP CONFIG ---
 st.set_page_config(page_title="Henry's Quality Shoe Repair", page_icon="👞")
 # --- CUSTOM STYLING ---
