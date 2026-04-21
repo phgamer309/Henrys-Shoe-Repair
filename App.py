@@ -60,6 +60,7 @@ if choice == "New Customer":
     with st.form("reg_form"):
         name = st.text_input("Customer Full Name")
         phone = st.text_input("Phone Number")
+        submit_button = st.form_submit_button("Register Customer")
         # Simplified Registering Logic
 if st.button("Register Customer"):
     if name and phone:
