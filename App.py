@@ -4,9 +4,13 @@ from firebase_admin import credentials, firestore
 
 # --- 1. FIREBASE SETUP ---
 if not firebase_admin._apps:
-    # Make sure this filename matches exactly what you renamed your JSON file
-    cred = credentials.Certificate("key.json") 
-    firebase_admin.initialize_app(cred)
+    # Convert secrets to a dictionary Python can read
+    try:
+        key_dict = st.secrets["firebase_config"]
+        cred = credentials.Certificate(dict(key_dict))
+        firebase_admin.initialize_app(cred)
+    except Exception as e:
+        st.error(f"Failed to connect to Firebase: {e}")
 
 db = firestore.client()
 
