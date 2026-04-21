@@ -52,31 +52,40 @@ choice = st.sidebar.radio("Action", ["New Customer", "Log a Repair", "View All R
 
 # --- 4. LOGIC SECTIONS ---
 
+# --- 4. LOGIC SECTIONS ---
+
 if choice == "New Customer":
     st.header("Register New Client")
+    
+    # Create the form
     with st.form("reg_form"):
-        name = st.text_input("Customer Full Name")
-        phone = st.text_input("Phone Number")
+        name_input = st.text_input("Customer Full Name")
+        phone_input = st.text_input("Phone Number")
+        # Assign the button to a variable
         submit_button = st.form_submit_button("Register Customer")
-        # Simplified Registering Logic
-st.write(f"Current DB Status: {db}")
-if st.button("Register Customer"):
-    name = name.strip()
-    phone = phone.strip()
-    if name and phone:
-        try:
-            db.collection("customers").document(phone).set({
-                "name": name,
-                "points": 0,
-                "repairs": []
+
+    # THIS IS THE KEY: We check the button variable, NOT st.form
+    if submit_button:
+        name = name_input.strip()
+        phone = phone_input.strip()
+        
+        if name and phone:
+            try:
+                db.collection("customers").document(phone).set({
+                    "name": name,
+                    "points": 0,
+                    "repairs": []
                 })  
-            
-            st.success(f"Successfully registered {name}!")
-            st.balloons()
-        except Exception as e:
-            st.error(f"Connection timed out. Error: {e}")
-    else:
-        st.warning("Please fill in both name and phone number.")
+                
+                st.success(f"Successfully registered {name}!")
+                st.balloons()
+            except Exception as e:
+                st.error(f"Connection error: {e}")
+        else:
+            st.warning("Please fill in both name and phone number.")
+
+elif choice == "Log a Repair":
+    # ... rest of your code ...
 elif choice == "Log a Repair":
     st.header("Log a Service")
     phone_lookup = st.text_input("Enter Customer Phone")
