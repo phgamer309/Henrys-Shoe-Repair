@@ -16,7 +16,7 @@ if not firebase_admin._apps:
 # This is the fix: Force REST instead of gRPC
 db = firestore.Client(
     project="henrysshoerepair-4a96e",
-    transport=FirestoreRestTransport
+    transport=FirestoreRestTransport)
 # --- 2. APP CONFIG ---
 st.set_page_config(page_title="Henry's Quality Shoe Repair", page_icon="👞")
 # --- CUSTOM STYLING ---
