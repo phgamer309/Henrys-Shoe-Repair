@@ -60,19 +60,19 @@ if choice == "New Customer":
     with st.form("reg_form"):
         name = st.text_input("Customer Full Name")
         phone = st.text_input("Phone Number")
-        if st.form_submit_button("Create Account"):
-            if phone and name:
-                # This saves directly to the Firebase 'customers' collection
-                doc_ref = db.collection("customers").document(phone)
-                doc_ref.set({
-                    "name": name,
-                    "points": 0,
-                    "repairs": []
-                })
-                st.success(f"Successfully registered {name}!")
-            else:
-                st.error("Please provide both Name and Phone.")
-
+        # Simplified Registering Logic
+if st.button("Register Customer"):
+    if name and phone:
+        try:
+            # Direct save - no batching
+            db.collection("customers").document(phone).set({
+                "name": name,
+                "points": 0,
+                "repairs": []
+            })
+            st.success(f"Registered {name}!")
+        except Exception as e:
+            st.error(f"Physical Connection Error: {e}")
 elif choice == "Log a Repair":
     st.header("Log a Service")
     phone_lookup = st.text_input("Enter Customer Phone")
