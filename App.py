@@ -70,6 +70,16 @@ choice = st.sidebar.radio("Action", ["New Customer", "Log a Repair", "View All R
 
 if choice == "New Customer":
     st.header("Register New Client")
+    if db is not None:
+        with st.form("reg_form"):
+            # ... your text inputs ...
+            submit_button = st.form_submit_button("Register")
+            
+            if submit_button:
+                # your saving logic here
+                pass
+    else:
+        st.error("Database is offline. Please check your Firebase Secrets for the 'Invalid TOML' error.")
     
     # Create the form
     with st.form("reg_form"):
