@@ -65,11 +65,11 @@ if st.button("Register Customer"):
     phone = phone.strip
     if name and phone:
         try:
-            db.collection("customers").document(phone).set(){
+            db.collection("customers").document(phone).set({
                 "name": name,
                 "points": 0,
                 "repairs": []
-                },  
+                }),  
             
             st.success(f"Successfully registered {name}!")
         except Exception as e:
