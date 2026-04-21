@@ -71,7 +71,7 @@ if choice == "New Customer":
         # Simplified Registering Logic
 if st.button("Register Customer"):
     name = name.strip
-    phone - phone.strip
+    phone = phone.strip
     if name and phone:
         try:
             db.collection("customers").document(phone).set({
