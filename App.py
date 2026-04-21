@@ -2,10 +2,6 @@ import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-import streamlit as st
-import firebase_admin
-from firebase_admin import credentials, firestore
-
 # --- 1. INITIALIZE GLOBAL VARIABLE ---
 # We define db as None first so the 'not defined' error goes away
 db = None
